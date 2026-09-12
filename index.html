@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Report Card System</title>
+    <style>
+        /* ==========================================================================
+           1. CORE STYLES & LAYOUT SYSTEM
+           ========================================================================== */
+        body {
+            background-color: #f9fafb;
+            color: #1f2937;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 1024px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 0.5rem 0;
+        }
+
+        header p {
+            color: #4b5563;
+            font-size: 1.125rem;
+            margin: 0;
+        }
+
+        /* ==========================================================================
+           2. TAB NAVIGATION COMPONENT
+           ========================================================================== */
+        .tabs-nav {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+            background-color: #ffffff;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-btn {
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            transition: all 0.2s ease;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .tab-btn:hover {
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .tab-btn.active {
+            border-color: #3b82f6 !important;
+            color: #3b82f6 !important;
+            background-color: #eff6ff;
+        }
+
+        .tab-content {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid #f3f4f6;
+        }
+
+        /* ==========================================================================
+           3. UI FORMS, INPUTS & FIELDS
+           ========================================================================== */
+        .panel-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: #111827;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .input-group {
+                flex-direction: row;
+            }
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: #ffffff;
+            outline: none;
+            font-size: 1rem;
+            transition: box-shadow 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .field-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-block label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .btn {
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        .btn-primary { background-color: #2563eb; color: #ffffff; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+
+        .btn-secondary { background-color: #4b5563; color: #ffffff; }
+        .btn-secondary:hover { background-color: #374151; }
+
+        .btn-success { background-color: #16a34a; color: #ffffff; }
+        .btn-success:hover { background-color: #15803d; }
+
+        .admin-banner {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-banner h4 {
+            margin: 0 0 0.5rem 0;
+            color: #14532d;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .admin-banner p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #166534;
+            line-height: 1.4;
+        }
+
+        /* ==========================================================================
+           4. DATA TABLES ARCHITECTURE
+           ========================================================================== */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .max-h-table {
+            max-height: 24rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f9fafb;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .data-table td {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            background-color: #ffffff;
+        }
+
+        .data-table tr:hover td {
+            background-color: #f9fafb;
+        }
+
+        .blue-highlight {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* ==========================================================================
+           5. UTILITY WRAPPERS & ACTIONS
+           ========================================================================== */
+        .hidden { display: none !important; }
+        
+        .status-message {
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-success { color: #16a34a; }
+        .status-warning { color: #ca8a04; }
+        .status-error { color: #dc2626; }
+
+        .download-box {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+            margin-top: 1.5rem;
+        }
+
+        .download-box h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .download-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        @media (min-width: 640px) {
+            .download-actions {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .file-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .file-badge span {
+            font-family: monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-left: 0.5rem;
+        }
+
+        .download-link {
+            margin-left: 1rem;
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .download-link:hover {
+            text-decoration: underline;
+        }
+
+        .flex-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .reset-btn {
+            font-size: 0.75rem;
+            background-color: #fee2e2;
+            color: #991b1b;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .reset-btn:hover { background-color: #fecaca; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>🏫 Digital Report Card Management System</h1>
+            <p>A unified platform for administrative grade imports and student self-service report generation.</p>
+        </header>
+
+        <div class="tabs-nav">
+            <button id="student-tab-btn" onclick="switchTab('student')" class="tab-btn active">
+                👤 Student Self-Service Portal
+            </button>
+            <button id="admin-tab-btn" onclick="switchTab('admin')" class="tab-btn">
+                🔒 Administrative Upload Dashboard
+            </button>
+        </div>
+
+        <div id="student-portal" class="tab-content">
+            <div class="panel-section">
+                <h3>🔑 Student ID Login</h3>
+                <div class="input-group">
+                    <input type="text" id="student-id-input" placeholder="e.g., STU1001" class="form-input">
+                    <button onclick="handleStudentLogin()" class="btn btn-primary">
+                        Sign In to Portal
+                    </button>
+                </div>
+                <div id="student-login-status" class="status-message"></div>
+            </div>
+
+            <div id="student-panel" class="hidden" style="border-top: 1px solid #e5e7eb; padding-top: 1.5rem; margin-top: 1.5rem;">
+                <div class="panel-section">
+                    <h3>📊 Your Performance Evaluation Dashboard</h3>
+                    
+                    <div class="filter-grid">
+                        <div class="field-block">
+                            <label for="semester-dropdown">Filter by Academic Semester</label>
+                            <select id="semester-dropdown" onchange="filterStudentData()" class="form-input">
+                                <option value="All Semesters">All Semesters</option>
+                            </select>
+                        </div>
+                        <div class="field-block">
+                            <label for="period-dropdown">Filter by Grading Period</label>
+                            <select id="period-dropdown" onchange="filterStudentData()" class="form-input">
+                                <option value="All Periods">All Periods</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">My Academic Report Card Rows</label>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Period</th>
+                                    <th>Semester</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body">
+                                <!-- Appended programmatically via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="download-box">
+                    <h3>📥 Download Document</h3>
+                    <div class="download-actions">
+                        <button onclick="exportStudentCSV()" class="btn btn-secondary">
+                            Compile and Export Official CSV Report Card
+                        </button>
+                        <div id="file-output-container" class="hidden file-badge">
+                            📄 <span id="download-file-name"></span>
+                            <a id="file-download-link" href="#" download class="download-link">Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-portal" class="tab-content hidden">
+            <div class="panel-section">
+                <h3>🔒 Secure Admin Authentication</h3>
+                <div class="filter-grid" style="margin-bottom: 1rem;">
+                    <div class="field-block">
+                        <label for="admin-user">Username</label>
+                        <input type="text" id="admin-user" placeholder="admin" class="form-input">
+                    </div>
+                    <div class="field-block">
+                        <label for="admin-pass">Password</label>
+                        <input type="password" id="admin-pass" placeholder="••••••••" class="form-input">
+                    </div>
+                </div>
+                <button onclick="handleAdminLogin()" class="btn btn-primary">
+                    Authenticate & Load Logs
+                </button>
+                <div id="admin-login-status" class="status-message"></div>
+            </div>
+
+            <div id="admin-panel" class="hidden" style="border-top: 1px solid #e5e7eb; padding-top: 1.5rem; margin-top: 1.5rem;">
+                <div class="admin-banner">
+                    <h4>📥 Batch Import Grade Submissions via CSV</h4>
+                    <p>Requirements: CSV architecture must explicitly match lowercase headers: <strong>id, class, subject, period, semester, grade</strong>.</p>
+                    <div class="input-group" style="margin-top: 0.75rem; align-items: center;">
+                        <input type="file" id="csv-file-input" accept=".csv" style="font-size: 0.875rem; color: #4b5563; flex: 1;">
+                        <button onclick="handleCSVUpload()" class="btn btn-success">
+                            Process Batch Upload
+                        </button>
+                    </div>
+                    <div id="upload-status" class="status-message"></div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="flex-row-header">
+                        <label style="font-size: 0.875rem; font-weight: 500; color: #374151;">Live Central Database Records</label>
+                        <button onclick="resetDatabase()" class="reset-btn">
+                            ⚠️ Reset to Default Schema
+                        </button>
+                    </div>
+                    <div class="table-wrapper max-h-table">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Class</th>
+                                    <th>Subject</th>
+                                    <th>Period</th>
+                                    <th>Semester</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-body">
+                                <!-- Loaded dynamically via LocalStorage data states -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REQUIRED_COLUMNS = ["id", "class", "subject", "period", "semester", "grade"];
+        const DEFAULT_MOCK_DATA = [
+            {"id": "STU1001", "class": "Grade_11A", "subject": "Mathematics", "period": "Quarter_1", "semester": "Semester_1", "grade": "92"},
+            {"id": "STU1001", "class": "Grade_11A", "subject": "English_Lit", "period": "Quarter_1", "semester": "Semester_1", "grade": "88"},
+            {"id": "STU1002", "class": "Grade_11B", "subject": "Mathematics", "period": "Quarter_1", "semester": "Semester_1", "grade": "79"}
+        ];
+        
+        // --- STORAGE INITIALIZER ---
+        function initializeDatabase() {
+            if (!localStorage.getItem("grades_database")) {
+                localStorage.setItem("grades_database", JSON.stringify(DEFAULT_MOCK_DATA));
+            }
+        }
+        initializeDatabase();
+
+        function getDatabase() {
+            return JSON.parse(localStorage.getItem("grades_database")) || [];
+        }
+
+        function saveDatabase(data) {
+            localStorage.setItem("grades_database", JSON.stringify(data));
+        }
+
+        function resetDatabase() {
+            if (confirm("Are you sure you want to clear current logs and reset the database?")) {
+                localStorage.setItem("grades_database", JSON.stringify(DEFAULT_MOCK_DATA));
+                refreshAdminDatabaseTable();
+                const statusDiv = document.getElementById('upload-status');
+                statusDiv.className = "status-message status-warning";
+                statusDiv.innerText = "🔄 System database restored to factory defaults.";
+            }
+        }
+
+        // --- NAVIGATION ROUTING ---
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            if (tab === 'student') {
+                document.getElementById('student-tab-btn').classList.add('active');
+                document.getElementById('student-portal').classList.remove('hidden');
+            } else {
+                document.getElementById('admin-tab-btn').classList.add('active');
+                document.getElementById('admin-portal').classList.remove('hidden');
+            }
+        }
+
+        // --- STUDENT SUBSYSTEM ACTIONS ---
+        let currentStudentId = "";
+
+        function handleStudentLogin() {
+            const studentIdInput = document.getElementById('student-id-input').value.trim();
+            const statusDiv = document.getElementById('student-login-status');
+            const panel = document.getElementById('student-panel');
+
+            if (!studentIdInput) {
+                statusDiv.className = "status-message status-warning";
+                statusDiv.innerText = "⚠️ Student ID cannot be empty.";
+                panel.classList.add('hidden');
+                return;
+            }
+
+            const db = getDatabase();
+            const studentRows = db.filter(row => String(row.id).trim() === studentIdInput);
+
+            if (studentRows.length > 0) {
+                currentStudentId = studentIdInput;
+                statusDiv.className = "status-message status-success";
+                statusDiv.innerText = `✅ Welcome Back Student: ${studentIdInput}`;
+                
+                populateDropdowns(studentRows);
+                filterStudentData();
+                panel.classList.remove('hidden');
+            } else {
+                statusDiv.className = "status-message status-error";
+                statusDiv.innerText = "❌ Student ID not found in current logs.";
+                panel.classList.add('hidden');
+            }
+        }
+
+        function populateDropdowns(rows) {
+            const semDropdown = document.getElementById('semester-dropdown');
+            const perDropdown = document.getElementById('period-dropdown');
+
+            const uniqueSemesters = [...new Set(rows.map(r => r.semester).filter(Boolean))].sort();
+            const uniquePeriods = [...new Set(rows.map(r => r.period).filter(Boolean))].sort();
+
+            semDropdown.innerHTML = '<option value="All Semesters">All Semesters</option>';
+            perDropdown.innerHTML = '<option value="All Periods">All Periods</option>';
+
+            uniqueSemesters.forEach(sem => {
+                semDropdown.innerHTML += `<option value="${sem}">${sem}</option>`;
+            });
+            uniquePeriods.forEach(per => {
+                perDropdown.innerHTML += `<option value="${per}">${per}</option>`;
+            });
+        }
+
+        function getFilteredStudentRows() {
+            const db = getDatabase();
+            let studentRows = db.filter(row => String(row.id).trim() === currentStudentId);
+
+            const selectedSemester = document.getElementById('semester-dropdown').value;
+            const selectedPeriod = document.getElementById('period-dropdown').value;
+
+            if (selectedSemester && selectedSemester !== "All Semesters") {
+                studentRows = studentRows.filter(r => r.semester === selectedSemester);
+            }
+            if (selectedPeriod && selectedPeriod !== "All Periods") {
+                studentRows = studentRows.filter(r => r.period === selectedPeriod);
+            }
+
+            return studentRows;
+        }
+
+        function filterStudentData() {
+            const filteredRows = getFilteredStudentRows();
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML = "";
+
+            filteredRows.forEach(row => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 500;">${row.id}</td>
+                        <td>${row.class}</td>
+                        <td>${row.subject}</td>
+                        <td>${row.period}</td>
+                        <td>${row.semester}</td>
+                        <td class="blue-highlight">${row.grade}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('file-output-container').classList.add('hidden');
+        }
+
+        function exportStudentCSV() {
+            const rowsToExport = getFilteredStudentRows();
+            if (rowsToExport.length === 0) return;
+
+            let csvContent = REQUIRED_COLUMNS.join(",") + "
+";
+            rowsToExport.forEach(row => {
+                const line = REQUIRED_COLUMNS.map(col => `"${row[col] || ''}"`).join(",");
+                csvContent += line + "
+";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const filename = `ReportCard_${currentStudentId}.csv`;
+            const downloadLink = document.getElementById('file-download-link');
+            
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            
+            document.getElementById('download-file-name').innerText = filename;
+            document.getElementById('file-output-container').style.display = 'inline-flex';
+            document.getElementById('file-output-container').classList.remove('hidden');
+        }
+
+        // --- ADMINISTRATIVE SUBSYSTEM ACTIONS ---
+        function handleAdminLogin() {
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+            const statusDiv = document.getElementById('admin-login-status');
+            const panel = document.getElementById('admin-panel');
+
+            if (user === "admin" && pass === "password123") {
+                statusDiv.className = "status-message status-success";
+                statusDiv.innerText = "✅ Admin Authentication Successful. Live database loaded below.";
+                
+                refreshAdminDatabaseTable();
+                panel.classList.remove('hidden');
+            } else {
+                statusDiv.className = "status-message status-error";
+                statusDiv.innerText = "❌ Invalid Admin Username or Password.";
+                panel.classList.add('hidden');
+            }
+        }
+
+        function refreshAdminDatabaseTable() {
+            const db = getDatabase();
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = "";
+
+            db.forEach(row => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 500;">${row.id}</td>
+                        <td>${row.class}</td>
+                        <td>${row.subject}</td>
+                        <td>${row.period}</td>
+                        <td>${row.semester}</td>
+                        <td style="font-weight: 600;">${row.grade}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function handleCSVUpload() {
+            const fileInput = document.getElementById('csv-file-input');
+            const statusDiv = document.getElementById('upload-status');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                statusDiv.className = "status-message status-warning";
+                statusDiv.innerText = "⚠️ Please upload a valid CSV file first.";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+                    if (lines.length < 2) throw new Error("File missing basic row records.");
+
+                    const headers = lines[0].split(',').map(h => h.replace(/^["']|["']$/g, '').trim().toLowerCase());
+                    
+                    const missing = REQUIRED_COLUMNS.filter(col => !headers.includes(col));
+                    if (missing.length > 0) {
+                        statusDiv.className = "status-message status-error";
+                        statusDiv.innerText = `❌ Upload Rejected. Missing required columns: { ${missing.join(', ')} }`;
+                        return;
+                    }
+
+                    const freshRecords = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].split(',').map(v => v.replace(/^["']|["']$/g, '').trim());
+                        if (values.length !== headers.length) continue;
+
+                        let rowObject = {};
+                        REQUIRED_COLUMNS.forEach(col => {
+                            const indexInCsv = headers.indexOf(col);
+                            rowObject[col] = values[indexInCsv];
+                        });
+                        freshRecords.push(rowObject);
+                    }
+
+                    let currentDb = getDatabase();
+                    let updatedDb = [...currentDb];
+                    let importedCount = 0;
+
+                    freshRecords.forEach(newRec => {
+                        const isDuplicate = currentDb.some(oldRec => 
+                            REQUIRED_COLUMNS.every(col => String(oldRec[col]) === String(newRec[col]))
+                        );
+                        if (!isDuplicate) {
+                            updatedDb.push(newRec);
+                            importedCount++;
+                        }
+                    });
+
+                    saveDatabase(updatedDb);
+                    refreshAdminDatabaseTable();
+
+                    statusDiv.className = "status-message status-success";
+                    statusDiv.innerText = `🎉 Success! Merged ${importedCount} records into the system database.`;
+                    fileInput.value = ""; 
+
+                } catch (err) {
+                    statusDiv.className = "status-message status-error";
+                    statusDiv.innerText = `❌ Engine failure parsing file: ${err.message}`;
+                }
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
